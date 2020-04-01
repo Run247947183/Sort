@@ -1,0 +1,48 @@
+private static void cardinalSort(int[] array) {
+        int location = 1;
+        int max = 0; // 找出数组中的最大值，最大值有几位数，就有几次循环排序
+        for (int i = 0; i < array.length; i++) {
+            if (array[i] > max) {
+                max = array[i];
+            }
+        }
+
+        // 创建 10 个桶子，每个桶装的是当前排序位下的数字
+        // 例如：一共有：99，23，15，7，1，9
+        // 现在排序个位数的大小，那么 99 放在第9个桶子下，23就放在第3个桶下，以此类推
+        ArrayList<ArrayList<Integer>> bucketList = new ArrayList<>();
+        for (int i = 0; i < 10; i++) {
+            bucketList.add(new ArrayList<>());
+        }
+
+        while (true) {
+            // tmp 依次是：1，10，100，1000......
+            int tmp = (int)Math.pow(10, location - 1);
+            if (max < tmp) {
+                // 终止条件：数组中最大数的每个位的数已经都进行排序过了
+                break;
+            }
+
+            for (int i = 0; i < array.length; i++) {
+                // single 表示 array[i] 数字在当前排序位数（例如个位）下的大小
+                // 例如：99，23，15，7，1，9 现在排序个位大小
+                // 当 array[i] 为 99 时，single 为 9
+                // 当 array[i] 为 23 时，single 为 3
+                int single = (array[i] / tmp) % 10;
+                bucketList.get(single).add(array[i]);
+            }
+
+            int index = 0;
+            // 将按当前排序位排好的数，从桶子中依次取出并且放回数组
+            for (int i = 0; i < 10; i++) {
+                int size = bucketList.get(i).size();
+                for (int j = 0; j < size; j++) {
+                    array[index++] = bucketList.get(i).get(j);
+                }
+                // 将桶清理，位下次数入桶准备
+                bucketList.get(i).clear();
+            }
+            // 排序下一个位数字
+            location++;
+        }
+    }
